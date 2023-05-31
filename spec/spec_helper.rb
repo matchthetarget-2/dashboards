@@ -20,8 +20,9 @@ require "#{File.expand_path("../support/hint_formatter", __FILE__)}"
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'open-uri'
 path_to_file = Dir.pwd + "/spec/support/currency_symbols.json"
-api_response = open(path_to_file).read.chomp
+api_response = URI.open(path_to_file).read.chomp
 RSpec.configure do |config|
   config.before(:each) do
     stub_request(:get, /api.exchangerate.host\/symbols/).
@@ -30,7 +31,7 @@ RSpec.configure do |config|
   end
 end
 path_to_file = Dir.pwd + "/spec/support/cup_to_svc.json"
-cup_to_svc = open(path_to_file).read.chomp
+cup_to_svc = URI.open(path_to_file).read.chomp
 RSpec.configure do |config|
   config.before(:each) do
     stub_request(:get, /api.exchangerate.host\/convert/).
