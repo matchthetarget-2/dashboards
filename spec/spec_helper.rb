@@ -18,7 +18,31 @@ require "#{File.expand_path("../support/hint_formatter", __FILE__)}"
 # the additional setup, and require it from the spec files that actually need
 # it.
 #
-# See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+# See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+path_to_file = Dir.pwd + "/spec/support/currency_symbols.json"
+api_response = open(path_to_file).read.chomp
+RSpec.configure do |config|
+  config.before(:each) do
+    stub_request(:get, /api.exchangerate.host\/symbols/).
+    with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+    to_return(status: 200, body: api_response, headers: {})
+  end
+end
+path_to_file = Dir.pwd + "/spec/support/cup_to_svc.json"
+cup_to_svc = open(path_to_file).read.chomp
+RSpec.configure do |config|
+  config.before(:each) do
+    stub_request(:get, /api.exchangerate.host\/convert/).
+      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(status: 200, body: cup_to_svc, headers: {})
+
+    stub_request(:get, /api.exchangerate.host\/latest/).
+      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(status: 200, body: cup_to_svc, headers: {})
+  end
+end
+
 RSpec.configure do |config|
   config.include RSpecHtmlMatchers
   config.example_status_persistence_file_path = "examples.txt"
